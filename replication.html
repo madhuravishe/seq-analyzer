@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Replication</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('bg image.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            text-align: center;
+            color: white;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 50px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .input-field {
+            width: 90%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result-section {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        header {
+            background: #150281;
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+            font-family: 'Nunito';
+        }
+    </style>
+    <script>
+        function replicateDNA() {
+            let compDNA = document.getElementById("compDNA").value.toUpperCase().trim();
+            if (!compDNA.match(/^[ATGC]+$/)) {
+                alert("Invalid DNA sequence. Please enter only A, T, G, or C.");
+                return;
+            }
+
+            let complementary = { 'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C' };
+
+            // Generate the non-complementary strand automatically
+            let nonCompDNA = "";
+            for (let i = 0; i < compDNA.length; i++) {
+                nonCompDNA += complementary[compDNA[i]] || '?';
+            }
+            document.getElementById("nonCompDNA").value = nonCompDNA;
+
+            // Generate leading and lagging strands
+            let leadingStrand = "";
+            let laggingStrand = "";
+            let okazakiFragments = [];
+            let fragment = "";
+
+            for (let i = 0; i < compDNA.length; i++) {
+                leadingStrand += complementary[compDNA[i]];
+                fragment = complementary[nonCompDNA[i]] + fragment; // Reverse fragment for Okazaki
+
+                if ((i + 1) % 3 === 0 || i === compDNA.length - 1) {
+                    okazakiFragments.push(fragment);
+                    fragment = "";
+                }
+            }
+            laggingStrand = okazakiFragments.join("-");
+
+            // Display results
+            document.getElementById("origin").innerHTML = `<strong>Replication Origin:</strong> ${compDNA.charAt(0)}`;
+            document.getElementById("leading").innerHTML = `<strong>Leading Strand:</strong> ${leadingStrand}`;
+            document.getElementById("lagging").innerHTML = `<strong>Lagging Strand:</strong> ${laggingStrand}`;
+            document.getElementById("okazaki").innerHTML = `<strong>Okazaki Fragments:</strong> ${okazakiFragments.join(" - ")}`;
+            document.getElementById("termination").innerHTML = `<strong>Termination Point:</strong> Position ${compDNA.length}`;
+            document.getElementById("daughter1").innerHTML = `<strong>Daughter DNA 1:</strong> ${leadingStrand}`;
+            document.getElementById("daughter2").innerHTML = `<strong>Daughter DNA 2:</strong> ${laggingStrand}`;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>DNA Replication</h1>
+    </header>
+    
+    <div class="container">
+        <h2>Enter Complementary DNA Strand</h2>
+        <textarea id="compDNA" class="input-field large-textarea" placeholder="Enter Complementary Strand"></textarea>
+        <h3>Automatically Generated Non-Complementary Strand</h3>
+        <textarea id="nonCompDNA" class="input-field large-textarea" placeholder="Non-Complementary Strand will be auto-generated" readonly></textarea>
+        <button onclick="replicateDNA()">Start Replication</button>
+
+        <div class="result-section">
+            <h3 id="origin"></h3>
+            <h3 id="leading"></h3>
+            <h3 id="lagging"></h3>
+            <h3 id="okazaki"></h3>
+            <h3 id="termination"></h3>
+            <h3 id="daughter1"></h3>
+            <h3 id="daughter2"></h3>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 seq Analyzer. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
